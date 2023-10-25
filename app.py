@@ -87,25 +87,27 @@ if uploaded_file is not None:
                                                                                     # Passing 'Residual Component' as title.
 
     # Function to remove anomalies using Isolation Forest
-    def remove_anomalies(passengers):
-        #outlier_detector = IsolationForest(contamination=0.01) 
-        outlier_detector = IsolationForest() 
-        outlier_detector.fit(passengers.values.reshape(-1, 1))
-        anomalies = outlier_detector.predict(passengers.values.reshape(-1, 1))
-        data['anomaly'] = anomalies
+    def remove_anomalies(passengers): 
+        outlier_detector = IsolationForest() # Creates Isolation Forest Model object to detect anomalies.  
+        
+        outlier_detector.fit(passengers.values.reshape(-1, 1)) # Converts the 1D passengers data into 2D because Isolation Forest uses 2D input for training.
+        
+        anomalies = outlier_detector.predict(passengers.values.reshape(-1, 1)) # Uses 2D data to predict anomalies after training.
+        
+        data['anomaly'] = anomalies # Anomalies stored in 'anomalies' are then added as a column in the 'data' DataFrame object.
 
         st.subheader("Anomaly Detection and Removal")
         st.subheader("Data with Anomalies:")
         plt.figure(figsize=(10, 6))
         plt.plot(data['Month'], passengers, label='Original')
-        plt.scatter(data[data['anomaly'] == -1]['Month'], passengers[data['anomaly'] == -1], color='r', label='Anomaly')
+        plt.scatter(data[data['anomaly'] == -1]['Month'], passengers[data['anomaly'] == -1], color='r', label='Anomaly') # Marks anomalies as red dots.
         plt.xlabel('')
         plt.ylabel('')
         plt.title('Data with Anomalies')
         plt.legend()
         st.pyplot()
 
-        clean_data = data[data['anomaly'] != -1]
+        clean_data = data[data['anomaly'] != -1] # New DataFrame object 'clean_data' is created with values of 'data' DataFrame object excluding anomaly values.
 
         st.subheader("Data Without Anomalies")
         plt.figure(figsize=(10, 6))
@@ -117,25 +119,34 @@ if uploaded_file is not None:
 
     # Function to fit and forecast using ARIMA on data without anomalies
     def fit_forecast_arima_without_anomalies(clean_data):
-        passengers = clean_data['#Passengers']
-        model = ARIMA(passengers, order=(1, 1, 1))
-        model_fit = model.fit()
-        num_periods = 12
-        forecast_index = pd.date_range(start=clean_data['Month'].iloc[-1], periods=num_periods + 1, freq='M')[1:]
-        forecast = model_fit.predict(start=len(passengers), end=len(passengers) + num_periods - 1)
+        passengers = clean_data['#Passengers'] # Stores anomalies excluded '#passenger' column values in 'passenger' variable.
+        
+        model = ARIMA(passengers, order=(1, 1, 1)) # order(p=1,d=1,q=1) represents:
+                                                   # p = 1 represents each value depending on the previous value.
+                                                   # d = 1 represents the data that has been differenced once.
+                                                   # q = 1 represents one past forecast error.
+        
+        model_fit = model.fit() # Trains ARIMA model upon the data and stores in 'model_fit'.
+        
+        num_periods = 12 # Representing 12 periods for which the prediction has to be done.
+        
+        forecast_index = pd.date_range(start=clean_data['Month'].iloc[-1], periods=num_periods + 1, freq='M')[1:] # Generates a dates range starting from the next date of the last date in the dataset to the date formed by specifying number of periods.
+        
+        forecast = model_fit.predict(start=len(passengers), end=len(passengers) + num_periods - 1) # Specifies number of values to be forcasted.
 
         st.subheader("ARIMA Model Forecast (Without Anomalies)")
         plt.figure(figsize=(10, 6))
         plt.plot(clean_data['Month'], clean_data['#Passengers'], label='Clean Data')
-        plt.plot(forecast_index, forecast, label='Forecast')
+        
+        plt.plot(forecast_index, forecast, label='Forecast') # Plots forcasted values in the combinations of 'forecast_index' and 'forecast' values.
+        
         plt.xlabel('Month')
         plt.ylabel('#Passengers')
         plt.title('Data with Forecast (Without Anomalies)')
         plt.legend()
         st.pyplot()
 
-    
-    check_stationarity(data['#Passengers']) # Creates a Series object of '#Passengers' and pass it as an argument.
+    check_stationarity(data['#Passengers'])
     decompose_seasonality(data['#Passengers'])
     remove_anomalies(data['#Passengers'])
 
