@@ -88,7 +88,8 @@ if uploaded_file is not None:
 
     # Function to remove anomalies using Isolation Forest
     def remove_anomalies(passengers):
-        outlier_detector = IsolationForest(contamination=0.01)
+        #outlier_detector = IsolationForest(contamination=0.01) 
+        outlier_detector = IsolationForest() 
         outlier_detector.fit(passengers.values.reshape(-1, 1))
         anomalies = outlier_detector.predict(passengers.values.reshape(-1, 1))
         data['anomaly'] = anomalies
