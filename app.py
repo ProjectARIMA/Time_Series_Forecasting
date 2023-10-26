@@ -56,9 +56,8 @@ if uploaded_file is not None:
 
     # Function to perform seasonal decomposition
     def decompose_seasonality(passengers):
-        decomposition = seasonal_decompose(passengers, model='additive', period=12) # seasonal_decompose() returns an object having trend, seasonal, and residual as attributes. 
+        decomposition = seasonal_decompose(passengers, period=12) # seasonal_decompose() returns an object having trend, seasonal, and residual as attributes. 
                                                                                     # 'passenger' represents Series object containing passenger column data.
-                                                                                    # 
                                                                                     # 'period' = 12 means that the repetition of patterns are expected to be yearly.
         
         trend = decomposition.trend
