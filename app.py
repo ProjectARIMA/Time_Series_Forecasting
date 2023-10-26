@@ -10,7 +10,7 @@ from statsmodels.tsa.arima.model import ARIMA
 from sklearn.ensemble import IsolationForest
 
 # Define the Streamlit app
-st.title("Anomaly Detection and Time Series Forecasting Web Application") #It sets the website title to 'Anomaly Detection and Time Series Forecasting Web Application'
+st.title("Univariate Anomaly Detection and Time Series Forecasting Web Application") #It sets the website title to 'Anomaly Detection and Time Series Forecasting Web Application'
 
 st.set_option('deprecation.showPyplotGlobalUse', False) #It hides all the warnings in python output
 
